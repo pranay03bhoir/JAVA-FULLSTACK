@@ -8,6 +8,7 @@ import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
+    Long nextId = 1L;
     private List<Category> categories = new ArrayList<>();
 
     @Override
@@ -17,6 +18,16 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void createCategory(Category category) {
+        category.setCategoryId(nextId++);
         categories.add(category);
+    }
+
+    @Override
+    public String deleteCategory(Long categoryId) {
+        Category category = categories.stream()
+                .filter(c -> c.getCategoryId().equals(categoryId))
+                .findFirst().get();
+        categories.remove(category);
+        return "Category with categoryId " + categoryId + " deleted successfully !!";
     }
 }
