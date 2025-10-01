@@ -1,5 +1,6 @@
 package com.social.media.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,13 +23,11 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private SocialUser socialUser;
 
     public SocialUser getSocialUser() {
         return socialUser;
     }
 
-    public void setSocialUser(SocialUser socialUser) {
-        this.socialUser = socialUser;
-    }
 }

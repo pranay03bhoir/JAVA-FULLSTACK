@@ -6,15 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,7 +21,7 @@ public class SocialUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
     //@JoinColumn(name = "social_profile_id")
     private SocialProfile socialProfile;
 
@@ -42,18 +34,18 @@ public class SocialUser {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
+
     private Set<SocialGroup> groups = new HashSet<>();
-
-    public Set<SocialGroup> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(Set<SocialGroup> groups) {
-        this.groups = groups;
-    }
 
     @Override
     public int hashCode(){
         return Objects.hash(id);
+    }
+
+    public void setSocialProfile(SocialProfile socialProfile){
+        this.socialProfile = socialProfile;
+        if (socialProfile.getUser() != this){
+            socialProfile.setSocialUser(this);
+        }
     }
 }

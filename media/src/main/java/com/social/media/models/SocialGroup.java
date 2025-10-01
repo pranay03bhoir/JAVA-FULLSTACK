@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,11 +24,8 @@ public class SocialGroup {
     private Long id;
 
     @ManyToMany(mappedBy = "groups")
+    @JsonIgnore
     private Set<SocialUser> socialUsers = new HashSet<>();
-
-    public Set<SocialUser> getSocialUsers() {
-        return socialUsers;
-    }
 
     public void setSocialUsers(Set<SocialUser> socialUsers) {
         this.socialUsers = socialUsers;
