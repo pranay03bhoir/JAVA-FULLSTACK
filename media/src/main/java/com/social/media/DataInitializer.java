@@ -1,7 +1,5 @@
 package com.social.media;
 
-import com.social.media.repositories.PostRepository;
-import com.social.media.repositories.SocialProfileRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,20 +8,22 @@ import com.social.media.models.Post;
 import com.social.media.models.SocialGroup;
 import com.social.media.models.SocialProfile;
 import com.social.media.models.SocialUser;
+import com.social.media.repositories.PostRepository;
 import com.social.media.repositories.SocialGroupRepository;
+import com.social.media.repositories.SocialProfileRepository;
 import com.social.media.repositories.SocialUserRepository;
 
 @Configuration
 public class DataInitializer {
 
-    private final SocialUserRepository userRepository;
-    private final SocialGroupRepository groupRepository;
+    private final SocialUserRepository socialUserRepository;
+    private final SocialGroupRepository socialGroupRepository;
     private final SocialProfileRepository socialProfileRepository;
     private final PostRepository postRepository;
 
-    public DataInitializer(SocialUserRepository userRepository, SocialGroupRepository groupRepository, SocialProfileRepository socialProfileRepository, PostRepository postRepository) {
-        this.userRepository = userRepository;
-        this.groupRepository = groupRepository;
+    public DataInitializer(SocialUserRepository socialUserRepository, SocialGroupRepository socialGroupRepository, SocialProfileRepository socialProfileRepository, PostRepository postRepository) {
+        this.socialUserRepository = socialUserRepository;
+        this.socialGroupRepository = socialGroupRepository;
         this.socialProfileRepository = socialProfileRepository;
         this.postRepository = postRepository;
     }
@@ -37,9 +37,9 @@ public class DataInitializer {
             SocialUser user3 = new SocialUser();
 
             // Save users to the database
-            userRepository.save(user1);
-            userRepository.save(user2);
-            userRepository.save(user3);
+            socialUserRepository.save(user1);
+            socialUserRepository.save(user2);
+            socialUserRepository.save(user3);
 
             // Create some groups
             SocialGroup group1 = new SocialGroup();
@@ -53,8 +53,8 @@ public class DataInitializer {
             group2.getSocialUsers().add(user3);
 
             // Save groups to the database
-            groupRepository.save(group1);
-            groupRepository.save(group2);
+            socialGroupRepository.save(group1);
+            socialGroupRepository.save(group2);
 
             // Associate users with groups
             user1.getGroups().add(group1);
@@ -63,9 +63,9 @@ public class DataInitializer {
             user3.getGroups().add(group2);
 
             // Save users back to database to update associations
-            userRepository.save(user1);
-            userRepository.save(user2);
-            userRepository.save(user3);
+            socialUserRepository.save(user1);
+            socialUserRepository.save(user2);
+            socialUserRepository.save(user3);
 
 
             // Create some posts
