@@ -1,5 +1,6 @@
 package com.example.securitydemo;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,10 +11,18 @@ public class GreetingsController {
 	public String greetings() {
 		return "Hello";
 	}
-	
-	public void hello() {
-		
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/user")
+    public String userGreetings() {
+		return "Hello, User";
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin")
+    public String adminGreetings() {
+		return "Hello, Admin";
 	}
+
 	
 
 }
