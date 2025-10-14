@@ -11,6 +11,10 @@ public class GreetingsController {
 		return "Hello";
 	}
 	
+	public void hello() {
+		
+	}
+	
 
 }
  
