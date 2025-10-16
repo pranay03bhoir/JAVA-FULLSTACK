@@ -22,6 +22,7 @@ public class GreetingsController {
     public String adminGreetings() {
 		return "Hello, Admin";
 	}
+ 
 
 	
 
