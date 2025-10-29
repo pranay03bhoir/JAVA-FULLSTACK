@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
@@ -21,6 +22,7 @@ import java.util.Date;
  * Utility class for JWT (JSON Web Token) operations including token generation, validation,
  * and extraction of user information from tokens.
  */
+@Component
 public class JwtUtils {
     // JWT token expiration time in milliseconds (configured in application.properties)
     @Value("${spring.app.jwtExpirationMs}")
