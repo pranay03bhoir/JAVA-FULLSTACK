@@ -19,6 +19,8 @@ public class NotesController {
     @PostMapping
     public Note createNote(@RequestBody String content,
                            @AuthenticationPrincipal UserDetails userDetails) {
+        // The @AuthenticationPrincipal annotation is used to inject currently authenticated user,
+        // into the controller.
         String username = userDetails.getUsername();
         System.out.println("USER DETAILS: " + username);
         return noteService.createNoteForUser(username, content);
