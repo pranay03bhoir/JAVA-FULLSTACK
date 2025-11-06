@@ -39,7 +39,7 @@ public class UserDetailsImpl implements UserDetails {
 
     public static UserDetailsImpl build(User user) {
         // Step 1: User ke roles ko GrantedAuthority list mein convert karo
-        List<GrantedAuthority> authorities = user.getRoles()// Returns: List<Role> (from database)
+        List<GrantedAuthority> authorities = user.getRole()// Returns: List<Role> (from database)
                 .stream()// Stream banao
                 .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))
                 .collect(Collectors.toList());
