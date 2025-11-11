@@ -39,14 +39,14 @@ public class UserDetailsImpl implements UserDetails {
 
     public static UserDetailsImpl build(User user) {
         // Step 1: User ke roles ko GrantedAuthority list mein convert karo
-        List<GrantedAuthority> authorities = user.getRole()// Returns: List<Role> (from database)
+        List<GrantedAuthority> authorities = user.getRoles()// Returns: List<Role> (from database)
                 .stream()// Stream banao
                 .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))
                 .collect(Collectors.toList());
         // Step 2: New UserDetailsImpl object banao with copied data
         return new UserDetailsImpl(
                 user.getUserId(), // 1L
-                user.getUserName(), // "rahul_kumar"
+                user.getUsername(), // "rahul_kumar"
                 user.getEmail(), // "rahul@example.com"
                 user.getPassword(),  // "$2a$10$abc123..."
                 authorities // [ROLE_CUSTOMER, ROLE_USER]

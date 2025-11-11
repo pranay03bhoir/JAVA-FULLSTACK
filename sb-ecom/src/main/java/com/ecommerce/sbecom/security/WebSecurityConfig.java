@@ -1,9 +1,15 @@
 package com.ecommerce.sbecom.security;
 
+import com.ecommerce.sbecom.models.AppRole;
+import com.ecommerce.sbecom.models.Role;
+import com.ecommerce.sbecom.models.User;
+import com.ecommerce.sbecom.repositories.RoleRepository;
+import com.ecommerce.sbecom.repositories.UserRepository;
 import com.ecommerce.sbecom.security.jwt.AuthEntryPoint;
 import com.ecommerce.sbecom.security.jwt.AuthTokenFilter;
 import com.ecommerce.sbecom.security.services.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +24,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.Set;
 
 /**
  * Spring Security Configuration Class
@@ -173,10 +181,11 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()          // Login/Register endpoints
                         .requestMatchers("/v3/api-docs/**").permitAll()       // Swagger/OpenAPI documentation
                         .requestMatchers("/swagger-ui/**").permitAll()        // Swagger UI
-                        .requestMatchers("/api.public/**").permitAll()        // Public API endpoints
-                        .requestMatchers("/api/admin/**").permitAll()         // Admin endpoints (currently public - SECURITY RISK!)
+                        //.requestMatchers("/api/public/**").permitAll()        // Public API endpoints
+                        // .requestMatchers("/api/admin/**").permitAll()         // Admin endpoints (currently public - SECURITY RISK!)
                         .requestMatchers("/api/test/**").permitAll()          // Test endpoints
                         .requestMatchers("/images/**").permitAll()            // Static image files
+                        .requestMatchers("/h2-console/**").permitAll()        // H2 database
 
                         // Secured endpoints - Authentication required
                         .anyRequest().authenticated()                          // Baaki sab endpoints authenticated users ke liye
@@ -206,6 +215,16 @@ public class WebSecurityConfig {
          */
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
+        // ======== X-FRAME-OPTIONS ==========
+        /*
+         * Yeh code X-Frame-Options HTTP response header ko SAMEORIGIN value pe set karta hai. Iska main kaam hai clickjacking attacks se protection provide karna.
+         *
+         *Jab aap yeh configuration lagate ho, toh yeh browser ko batata hai ki aapka page sirf usi website ke iframe mein load ho sakta hai jo same origin (same domain, protocol, aur port) ka ho. Matlab agar aapki website example.com hai, toh sirf example.com ke doosre pages hi aapke page ko frame mein load kar sakte hain, koi external website nahi kar sakti.​
+         *
+         * */
+        http.headers(headers -> headers.frameOptions(
+                frameOptionsConfig -> frameOptionsConfig.sameOrigin()
+        ));
         // Security filter chain build karke return karo
         return http.build();
     }
@@ -234,5 +253,66 @@ public class WebSecurityConfig {
                 "/swagger-ui.html",           // Old Swagger UI
                 "webjars/**"                  // WebJars (frontend libraries)
         ));
+    }
+
+    @Bean
+    public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        return args -> {
+            // Retrieve or create roles
+            Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
+                    .orElseGet(() -> {
+                        Role newUserRole = new Role(AppRole.ROLE_USER);
+                        return roleRepository.save(newUserRole);
+                    });
+
+            Role sellerRole = roleRepository.findByRoleName(AppRole.ROLE_SELLER)
+                    .orElseGet(() -> {
+                        Role newSellerRole = new Role(AppRole.ROLE_SELLER);
+                        return roleRepository.save(newSellerRole);
+                    });
+
+            Role adminRole = roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
+                    .orElseGet(() -> {
+                        Role newAdminRole = new Role(AppRole.ROLE_ADMIN);
+                        return roleRepository.save(newAdminRole);
+                    });
+
+            Set<Role> userRoles = Set.of(userRole);
+            Set<Role> sellerRoles = Set.of(sellerRole);
+            Set<Role> adminRoles = Set.of(userRole, sellerRole, adminRole);
+
+
+            // Create users if not already present
+            if (!userRepository.existsByUsername("user1")) {
+                User user1 = new User(passwordEncoder.encode("password1"), "user1@example.com", "user1");
+                userRepository.save(user1);
+            }
+
+            if (!userRepository.existsByUsername("seller1")) {
+                User seller1 = new User(passwordEncoder.encode("password2"), "seller1@example.com", "seller1");
+                userRepository.save(seller1);
+            }
+
+            if (!userRepository.existsByUsername("admin")) {
+                User admin = new User(passwordEncoder.encode("adminPass"), "admin@example.com", "admin");
+                userRepository.save(admin);
+            }
+
+            // Update roles for existing users
+            userRepository.findByUsername("user1").ifPresent(user -> {
+                user.setRoles(userRoles);
+                userRepository.save(user);
+            });
+
+            userRepository.findByUsername("seller1").ifPresent(seller -> {
+                seller.setRoles(sellerRoles);
+                userRepository.save(seller);
+            });
+
+            userRepository.findByUsername("admin").ifPresent(admin -> {
+                admin.setRoles(adminRoles);
+                userRepository.save(admin);
+            });
+        };
     }
 }

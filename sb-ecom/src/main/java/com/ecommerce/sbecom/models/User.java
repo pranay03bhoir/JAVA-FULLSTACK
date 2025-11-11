@@ -30,7 +30,7 @@ public class User {
     @NotBlank
     @Size(max = 20)
     @Column(name = "username")
-    private String userName;
+    private String username;
 
 
     @NotBlank
@@ -50,7 +50,7 @@ public class User {
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> role = new HashSet<>();
+    private Set<Role> roles = new HashSet<>();
 
     @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -64,9 +64,9 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "address_id"))
     private List<Address> addresses = new ArrayList<>();
 
-    public User(String password, String email, String userName) {
+    public User(String password, String email, String username) {
         this.password = password;
         this.email = email;
-        this.userName = userName;
+        this.username = username;
     }
 }

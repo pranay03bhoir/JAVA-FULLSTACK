@@ -2,6 +2,7 @@ package com.ecommerce.sbecom.security.jwt;
 
 // Import necessary Java and Spring Framework classes
 
+import com.ecommerce.sbecom.security.services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -75,7 +75,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
 
     /**
-     * UserDetailsService - Database Se User Details Load Karta Hai
+     * UserDetailsServiceImpl - Database Se User Details Load Karta Hai
      * <p>
      * Ye aapki UserDetailsServiceImpl implementation hai jo:
      * 1. Username/email se user ko database se fetch karta hai
@@ -86,8 +86,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
      *
      * @Autowired: Spring automatically inject karega
      */
-    
-    private final UserDetailsService userDetailsService;
+
+    private final UserDetailsServiceImpl userDetailsService;
 
     /**
      * doFilterInternal() - Main Filter Method (Core Logic)
@@ -192,7 +192,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                  * Example: username = "rahul@example.com"
                  */
                 String username = jwtUtils.getUsernameFromJwtToken(jwt);
-
                 // ====== STEP 4: DATABASE SE USER DETAILS LOAD KARO ======
                 /**
                  * Username se complete user details load karo database se
@@ -418,7 +417,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
          * Agar Authorization header nahi hai:
          * Output: null
          */
-        String jwt = jwtUtils.getJwtFromHeader(request);
+        String token = jwtUtils.getJwtFromHeader(request);
+        String jwt = jwtUtils.getJwtFromCookie(request);
 
         /**
          * Debug logging - Token present hai ya nahi

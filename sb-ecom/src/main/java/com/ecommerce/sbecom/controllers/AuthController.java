@@ -11,8 +11,11 @@ import com.ecommerce.sbecom.security.request.SignupRequest;
 import com.ecommerce.sbecom.security.response.MessageResponse;
 import com.ecommerce.sbecom.security.response.UserInfoResponse;
 import com.ecommerce.sbecom.security.services.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,11 +23,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Authentication Controller - User Login Handler
@@ -34,6 +36,7 @@ import java.util.*;
  */
 @RestController // REST API endpoint banata hai - JSON request/response
 @RequiredArgsConstructor // Lombok: final fields ke liye constructor inject karta hai
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final UserRepository userRepository;
@@ -242,7 +245,8 @@ public class AuthController {
          * Client future requests mein ye token header mein bhejega:
          * Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
          */
-        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
+        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails.getUsername());
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
         // ====== STEP 7: USER ROLES EXTRACT KARO ======
         /**
@@ -317,7 +321,9 @@ public class AuthController {
          *
          * Login successful! User ab authenticated hai aur token use kar sakta hai
          */
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .body(response);
     }
 
     /**
@@ -340,7 +346,7 @@ public class AuthController {
      * }
      */
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
 
         // ====== STEP 1: USERNAME DUPLICATE CHECK ======
         /**
@@ -360,7 +366,7 @@ public class AuthController {
          * - Already exists in database
          * - Return 400 Bad Request with error message
          */
-        if (userRepository.existsByUserName(signupRequest.getUsername())) {
+        if (userRepository.existsByUsername(signupRequest.getUsername())) {
             /**
              * ResponseEntity.badRequest():
              * - HTTP Status: 400 Bad Request
@@ -437,9 +443,9 @@ public class AuthController {
          * But matches() method correctly verify karega
          */
         User user = new User(
-                signupRequest.getUsername(),
+                passwordEncoder.encode(signupRequest.getPassword()),
                 signupRequest.getEmail(),
-                passwordEncoder.encode(signupRequest.getPassword())
+                signupRequest.getUsername()
         );
 
         // ====== STEP 4: ROLES EXTRACT FROM REQUEST ======
@@ -655,7 +661,7 @@ public class AuthController {
          * | 1       | 1       |
          * | 1       | 2       |
          */
-        user.setRole(roles);
+        user.setRoles(roles);
 
         // ====== STEP 7: DATABASE MEIN USER SAVE KARO ======
         /**
@@ -709,4 +715,31 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("User registered successfully"));
     }
 
+    @GetMapping("/username")
+    public String currentUserName(Authentication authentication) {
+        if (authentication != null) {
+            return authentication.getName();
+        } else {
+            return " ";
+        }
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getUserDetails(Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+
+        UserInfoResponse userInfoResponse = new UserInfoResponse(userDetails.getId(), userDetails.getUsername(), roles);
+        return ResponseEntity.ok().body(userInfoResponse);
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<?> signOutUser() {
+        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new MessageResponse("You have been signed out !!!"));
+    }
 }
