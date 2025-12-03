@@ -3,10 +3,10 @@ package com.ecommerce.sbecom.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor
@@ -40,14 +40,15 @@ public class Address {
     private String country;
 
     @NotBlank
-    @Size(min = 6, message = "Pincode name should be atleast 6 characters.")
-    private int pincode;
+    @Size(min = 5, message = "Pincode name should be atleast 5 characters.")
+    private String pincode;
 
-    @ToString.Exclude
-    @ManyToMany(mappedBy = "addresses")
-    private List<User> users = new ArrayList<>();
 
-    public Address(String buildingName, String city, String country, int pincode, String state, String street) {
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public Address(String buildingName, String city, String country, String pincode, String state, String street) {
         this.buildingName = buildingName;
         this.city = city;
         this.country = country;
