@@ -9,12 +9,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentDTO {
+public class OrderRequestDTO {
 
-    private Long paymentId;
+    private Long addressId;
     private String paymentMethod;
-    private String pgPayment;
+    private String pgName;
+    private String pgPaymentId;
     private String pgStatus;
     private String pgResponseMessage;
-    private String pgName;
+    
+
 }
