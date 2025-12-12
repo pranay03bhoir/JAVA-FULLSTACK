@@ -417,9 +417,16 @@ public class AuthTokenFilter extends OncePerRequestFilter {
          * Agar Authorization header nahi hai:
          * Output: null
          */
-        String token = jwtUtils.getJwtFromHeader(request);
-        String jwt = jwtUtils.getJwtFromCookie(request);
 
+        String jwtFromCookie = jwtUtils.getJwtFromCookie(request);
+        if (jwtFromCookie != null) {
+            return jwtFromCookie;
+        }
+        
+        String jwtFromHeader = jwtUtils.getJwtFromHeader(request);
+        if (jwtFromHeader != null) {
+            return jwtFromHeader;
+        }
         /**
          * Debug logging - Token present hai ya nahi
          *
@@ -436,8 +443,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
          * - Agar debugging ke liye actual token dekhna ho, temporarily log kar sakte ho
          * - But production mein NEVER log actual tokens
          */
-        logger.debug("Extracted JWT token: {}", jwt != null ? "[JWT_TOKEN_PRESENT]" : "null");
+        logger.debug("Extracted JWT token: {}", jwtFromCookie != null ? "[JWT_TOKEN_PRESENT]" : "null");
 
-        return jwt;
+        return null;
     }
 }
