@@ -1,10 +1,11 @@
 import "./App.css";
+import Products from "./components/Products.jsx";
 
 function App() {
   return (
     <>
       <div>
-        <h1 className={`text-3xl`}>Hello world</h1>
+        <Products />
       </div>
     </>
   );
