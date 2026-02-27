@@ -178,6 +178,7 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests(authorizeRequest ->
                 authorizeRequest
                         // Public endpoints - Koi bhi access kar sakta hai (no authentication required)
+                        .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()          // Login/Register endpoints
                         .requestMatchers("/v3/api-docs/**").permitAll()       // Swagger/OpenAPI documentation
                         .requestMatchers("/swagger-ui/**").permitAll()        // Swagger UI
