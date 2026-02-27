@@ -1,20 +1,21 @@
 import React, { useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
+import ProductViewModal from "./ProductViewModal.jsx";
 
 const ProductCard = ({
   productId,
   productName,
-  image,
-  description,
-  quantity,
-  price,
-  discount,
-  specialPrice,
+  productImage,
+  productDescription,
+  productQuantity,
+  productPrice,
+  productDiscount,
+  specialprice,
 }) => {
   const [openProductViewModal, setOpenProductViewModal] = useState(false);
   const buttonLoader = false;
   const [selectedViewProduct, setSelectedViewProduct] = useState({});
-  const isAvailable = quantity && Number(quantity) > 0;
+  const isAvailable = productQuantity && Number(productQuantity) > 0;
 
   const handleProductView = (product) => {
     setSelectedViewProduct(product);
@@ -30,19 +31,19 @@ const ProductCard = ({
           handleProductView({
             id: productId,
             productName,
-            image,
-            description,
-            quantity,
-            price,
-            discount,
-            specialPrice,
+            productImage,
+            productDescription,
+            productQuantity,
+            productPrice,
+            productDiscount,
+            specialprice,
           });
         }}
         className={`w-full overflow-hidden aspect-3/2`}
       >
         <img
           className={`w-full h-full cursor-pointer transition-transform duration-300 transform hover:scale-105`}
-          src={image}
+          src={productImage}
           alt={productName}
         />
       </div>
@@ -52,12 +53,12 @@ const ProductCard = ({
             handleProductView({
               id: productId,
               productName,
-              image,
-              description,
-              quantity,
-              price,
-              discount,
-              specialPrice,
+              productImage,
+              productDescription,
+              productQuantity,
+              productPrice,
+              productDiscount,
+              specialprice,
             });
           }}
           className={`text-lg font-semibold mb-2 cursor-pointer`}
@@ -65,22 +66,22 @@ const ProductCard = ({
           {productName}
         </h2>
         <div className={`min-h-20 max-h-20`}>
-          <p className={`text-gray-600 text-sm`}>{description}</p>
+          <p className={`text-gray-600 text-sm`}>{productDescription}</p>
         </div>
         <div className={`flex items-center justify-between`}>
-          {specialPrice ? (
+          {specialprice ? (
             <div className={`flex flex-col`}>
               <span className={`text-gray-400 line-through`}>
-                ₹{Number(price).toFixed(2)}
+                ₹{Number(productPrice).toFixed(2)}
               </span>
               <span className={`text-slate-800 font-bold text-xl`}>
-                ₹{Number(specialPrice).toFixed(2)}
+                ₹{Number(specialprice).toFixed(2)}
               </span>
             </div>
           ) : (
             <div>
               <span className={`text-gray-600 line-through`}>
-                {"  "}₹{Number(price).toFixed(2)}
+                {"  "}₹{Number(productPrice).toFixed(2)}
               </span>
             </div>
           )}
@@ -94,6 +95,12 @@ const ProductCard = ({
           </button>
         </div>
       </div>
+      <ProductViewModal
+        open={openProductViewModal}
+        setOpen={setOpenProductViewModal}
+        product={selectedViewProduct}
+        isAvailable={isAvailable}
+      />
     </div>
   );
 };
