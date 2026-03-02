@@ -40,6 +40,8 @@ public class ProductServiceImpl implements ProductService {
     private final CartService cartService;
     @Value("${project.images}")
     private String path;
+    @Value("${image.base.url}")
+    private String imageBaseUrl;
 
     @Override
     public ProductDTO addProduct(Long categoryId, ProductDTO productDTO) {
@@ -56,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
             Product product = modelMapper.map(productDTO, Product.class);
             product.setProductImage("default.png");
             product.setCategory(category);
-            double specialPrice = product.getProductPrice() - ((product.getProductDiscount() * 0.01) * product.getProductPrice());
+            double specialPrice = product.getProductPrice() * (1 - product.getProductDiscount() * 0.01);
             product.setSpecialPrice(specialPrice);
             Product savedProduct = productRepository.save(product);
             return modelMapper.map(savedProduct, ProductDTO.class);
@@ -77,7 +79,11 @@ public class ProductServiceImpl implements ProductService {
             throw new APIExceptions("No products exists!!!");
         }
         List<ProductDTO> productDTOS = products.stream()
-                .map(product -> modelMapper.map(product, ProductDTO.class))
+                .map(product -> {
+                    ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+                    productDTO.setProductImage(constructImageUrl(product.getProductImage()));
+                    return productDTO;
+                })
                 .toList();
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDTOS);
@@ -87,6 +93,12 @@ public class ProductServiceImpl implements ProductService {
         productResponse.setTotalPages(productPage.getTotalPages());
         productResponse.setLastPage(productPage.isLast());
         return productResponse;
+    }
+
+    private String constructImageUrl(String imageName){
+        return imageBaseUrl.endsWith("/")
+                        ? imageBaseUrl + imageName
+                        : imageBaseUrl + "/" + imageName;
     }
 
     @Override
@@ -149,8 +161,8 @@ public class ProductServiceImpl implements ProductService {
         productFromDB.setProductQuantity(product.getProductQuantity());
         productFromDB.setProductDiscount(product.getProductDiscount());
         productFromDB.setProductPrice(product.getProductPrice());
-        double specialPrice = product.getProductPrice() - ((product.getProductDiscount() * 0.01) * product.getProductPrice());
-        product.setSpecialPrice(specialPrice);
+        double specialPrice = product.getProductPrice() * (1 - product.getProductDiscount() * 0.01);
+        productFromDB.setSpecialPrice(specialPrice);
         Product savedProduct = productRepository.save(productFromDB);
         List<Cart> carts = cartRepository.findCartsByProductId(productId);
         List<CartDTO> cartDTOS = carts.stream().map(cart -> {
