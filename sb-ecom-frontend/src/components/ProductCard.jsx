@@ -10,7 +10,7 @@ const ProductCard = ({
   productQuantity,
   productPrice,
   productDiscount,
-  specialprice,
+  specialPrice,
 }) => {
   const [openProductViewModal, setOpenProductViewModal] = useState(false);
   const buttonLoader = false;
@@ -36,7 +36,7 @@ const ProductCard = ({
             productQuantity,
             productPrice,
             productDiscount,
-            specialprice,
+            specialPrice,
           });
         }}
         className={`w-full overflow-hidden aspect-3/2`}
@@ -58,7 +58,7 @@ const ProductCard = ({
               productQuantity,
               productPrice,
               productDiscount,
-              specialprice,
+              specialPrice,
             });
           }}
           className={`text-lg font-semibold mb-2 cursor-pointer`}
@@ -69,13 +69,13 @@ const ProductCard = ({
           <p className={`text-gray-600 text-sm`}>{productDescription}</p>
         </div>
         <div className={`flex items-center justify-between`}>
-          {specialprice ? (
+          {specialPrice ? (
             <div className={`flex flex-col`}>
               <span className={`text-gray-400 line-through`}>
                 ₹{Number(productPrice).toFixed(2)}
               </span>
               <span className={`text-slate-800 font-bold text-xl`}>
-                ₹{Number(specialprice).toFixed(2)}
+                ₹{Number(specialPrice).toFixed(2)}
               </span>
             </div>
           ) : (

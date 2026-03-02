@@ -19,7 +19,7 @@ function ProductViewModal({ open, setOpen, product, isAvailable }) {
     productQuantity,
     productPrice,
     productDiscount,
-    specialprice,
+    specialPrice,
   } = product;
 
   const handleOpen = () => {
@@ -59,13 +59,13 @@ function ProductViewModal({ open, setOpen, product, isAvailable }) {
                 </DialogTitle>
                 <div className="space-y-2 text-gray-700 pb-4">
                   <div className="flex items-center justify-between gap-2">
-                    {specialprice ? (
+                    {specialPrice ? (
                       <div className="flex items-center gap-2">
                         <span className="text-gray-400 line-through">
                           ₹{Number(productPrice).toFixed(2)}
                         </span>
                         <span className="sm:text-xl font-semibold text-slate-700">
-                          ₹{Number(specialprice).toFixed(2)}
+                          ₹{Number(specialPrice).toFixed(2)}
                         </span>
                       </div>
                     ) : (
