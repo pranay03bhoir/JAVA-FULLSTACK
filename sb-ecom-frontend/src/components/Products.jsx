@@ -4,14 +4,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { fetchProducts } from "../store/action/index.js";
 import Filter from "./Filter.jsx";
+import useProductFilter from "./hooks/useProductFilter.jsx";
 
 const Products = () => {
   const { isLoading, errorMessage } = useSelector((state) => state.errors);
   const { products } = useSelector((state) => state.products);
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
+  useProductFilter();
+  // useEffect(() => {
+  //   dispatch(fetchProducts());
+  // }, [dispatch]);
 
   return (
     <div className={`lg:px-14 sm:px-8 px-4 py-14 2xl:w-[90%] 2xl:mx-auto`}>
