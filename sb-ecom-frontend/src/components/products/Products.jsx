@@ -1,15 +1,18 @@
 import { FaExclamationTriangle } from "react-icons/fa";
-import ProductCard from "./ProductCard.jsx";
+import ProductCard from "../shared/ProductCard.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { fetchCategories } from "../store/action/index.js";
+import { fetchCategories } from "../../store/action/index.js";
 import Filter from "./Filter.jsx";
-import useProductFilter from "./hooks/useProductFilter.jsx";
-import Loader from "./Loader.jsx";
+import useProductFilter from "../hooks/useProductFilter.js";
+import Loader from "../shared/Loader.jsx";
+import PaginationComp from "../shared/PaginationComp.jsx";
 
 const Products = () => {
   const { isLoading, errorMessage } = useSelector((state) => state.errors);
-  const { products, categories } = useSelector((state) => state.products);
+  const { products, categories, pagination } = useSelector(
+    (state) => state.products,
+  );
   const dispatch = useDispatch();
   useProductFilter();
   useEffect(() => {
@@ -39,6 +42,9 @@ const Products = () => {
                   <ProductCard {...item} />
                 </div>
               ))}
+          </div>
+          <div className={`flex justify-center pt-10`}>
+            <PaginationComp {...pagination} />
           </div>
         </div>
       )}
