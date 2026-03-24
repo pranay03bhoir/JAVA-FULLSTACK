@@ -1,15 +1,4 @@
-import {
-  beauty,
-  fitness,
-  homeComfort,
-  kitchen,
-  office,
-  outdoor,
-  pet,
-  smartHome,
-  tech,
-  wardrobe,
-} from "./constants.js";
+import { beauty, homeComfort, outdoor, smartHome, tech } from "./constants.js";
 
 export const bannerList = [
   {
@@ -28,56 +17,20 @@ export const bannerList = [
   },
   {
     id: 3,
-    image: fitness,
-    title: "Fitness Gear",
-    subtitle: "Workout",
-    description: "Equip your home gym with premium training essentials",
-  },
-  {
-    id: 4,
-    image: kitchen,
-    title: "Kitchen Essentials",
-    subtitle: "Cooking & Dining",
-    description: "Elevate your culinary experience with pro-grade cookware",
-  },
-  {
-    id: 5,
     image: outdoor,
     title: "Outdoor Adventure",
     subtitle: "Camping & Hiking",
     description: "Gear up for your next trip with durable outdoor equipment",
   },
   {
-    id: 6,
-    image: office,
-    title: "Office Supplies",
-    subtitle: "Workspace",
-    description: "Boost your productivity with ergonomic desk accessories",
-  },
-  {
-    id: 7,
+    id: 4,
     image: beauty,
     title: "Beauty & Care",
     subtitle: "Personal Care",
     description: "Rejuvenate your routine with top-rated skincare products",
   },
   {
-    id: 8,
-    image: wardrobe,
-    title: "Wardrobe Basics",
-    subtitle: "Apparel",
-    description:
-      "Refresh your daily style with versatile and comfortable clothing",
-  },
-  {
-    id: 9,
-    image: pet,
-    title: "Pet Supplies",
-    subtitle: "Pets",
-    description: "Treat your furry friends to high-quality toys and treats",
-  },
-  {
-    id: 10,
+    id: 5,
     image: smartHome,
     title: "Smart Home",
     subtitle: "Automation",

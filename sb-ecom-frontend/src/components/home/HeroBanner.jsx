@@ -25,7 +25,7 @@ const HeroBanner = () => {
     `bg-banner-color10`,
   ];
   return (
-    <div className={`py-2 rounded-md banner`}>
+    <div className={` rounded-md banner`}>
       <Swiper
         grabCursor={true}
         autoplay={{
@@ -40,9 +40,7 @@ const HeroBanner = () => {
       >
         {bannerList.map((item, i) => (
           <SwiperSlide key={item.id}>
-            <div
-              className={`carousel-item rounded-md sm:h-125 h-96 ${colors[i]}`}
-            >
+            <div className={`carousel-item rounded-md  md:h-96 ${colors[i]}`}>
               <div className={`flex items-center justify-center`}>
                 <div className={`hidden lg:flex justify-center w-1/2 p-8`}>
                   <div className={`text-center`}>
