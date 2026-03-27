@@ -12,6 +12,7 @@ const ProductCard = ({
   productPrice,
   productDiscount,
   specialPrice,
+  about = false,
 }) => {
   const [openProductViewModal, setOpenProductViewModal] = useState(false);
   const buttonLoader = false;
@@ -19,8 +20,10 @@ const ProductCard = ({
   const isAvailable = productQuantity && Number(productQuantity) > 0;
 
   const handleProductView = (product) => {
-    setSelectedViewProduct(product);
-    setOpenProductViewModal(!openProductViewModal);
+    if (!about) {
+      setSelectedViewProduct(product);
+      setOpenProductViewModal(!openProductViewModal);
+    }
   };
 
   return (
@@ -71,32 +74,34 @@ const ProductCard = ({
             {truncateText(productDescription)}
           </p>
         </div>
-        <div className={`flex items-center justify-between`}>
-          {specialPrice ? (
-            <div className={`flex flex-col`}>
-              <span className={`text-gray-400 line-through`}>
-                ₹{Number(productPrice).toFixed(2)}
-              </span>
-              <span className={`text-slate-800 font-bold text-xl`}>
-                ₹{Number(specialPrice).toFixed(2)}
-              </span>
-            </div>
-          ) : (
-            <div>
-              <span className={`text-gray-600 line-through`}>
-                {"  "}₹{Number(productPrice).toFixed(2)}
-              </span>
-            </div>
-          )}
-          <button
-            disabled={!isAvailable || buttonLoader}
-            onClick={() => {}}
-            className={`bg-blue-500 text-white rounded-md p-2 transition-colors duration-200 items-center w-36 flex justify-center  ${isAvailable ? "opacity-100 hover:bg-blue-600 active:scale-95" : "opacity-70"}`}
-          >
-            <FaShoppingCart className={`mr-2`} />
-            {isAvailable ? "Add to cart" : "Out of stock"}
-          </button>
-        </div>
+        {!about && (
+          <div className={`flex items-center justify-between`}>
+            {specialPrice ? (
+              <div className={`flex flex-col`}>
+                <span className={`text-gray-400 line-through`}>
+                  ₹{Number(productPrice).toFixed(2)}
+                </span>
+                <span className={`text-slate-800 font-bold text-xl`}>
+                  ₹{Number(specialPrice).toFixed(2)}
+                </span>
+              </div>
+            ) : (
+              <div>
+                <span className={`text-gray-600 line-through`}>
+                  {"  "}₹{Number(productPrice).toFixed(2)}
+                </span>
+              </div>
+            )}
+            <button
+              disabled={!isAvailable || buttonLoader}
+              onClick={() => {}}
+              className={`bg-blue-500 text-white rounded-md p-2 transition-colors duration-200 items-center w-36 flex justify-center  ${isAvailable ? "opacity-100 hover:bg-blue-600 active:scale-95" : "opacity-70"}`}
+            >
+              <FaShoppingCart className={`mr-2`} />
+              {isAvailable ? "Add to cart" : "Out of stock"}
+            </button>
+          </div>
+        )}
       </div>
       <ProductViewModal
         open={openProductViewModal}
