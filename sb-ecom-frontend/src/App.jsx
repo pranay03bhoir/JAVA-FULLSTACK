@@ -5,6 +5,7 @@ import Home from "./components/home/Home.jsx";
 import NavBar from "./components/shared/NavBar.jsx";
 import About from "./components/About.jsx";
 import ContactUs from "./components/ContactUs.jsx";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path={`/contact`} element={<ContactUs />} />
         </Routes>
       </BrowserRouter>
+      <Toaster position={`bottom-center`} />
     </div>
   );
 }
