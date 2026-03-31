@@ -6,6 +6,7 @@ import NavBar from "./components/shared/NavBar.jsx";
 import About from "./components/About.jsx";
 import ContactUs from "./components/ContactUs.jsx";
 import { Toaster } from "react-hot-toast";
+import Cart from "./components/cart/Cart.jsx";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path={`/products`} element={<Products />} />
           <Route path={`/about`} element={<About />} />
           <Route path={`/contact`} element={<ContactUs />} />
+          <Route path={`/cart`} element={<Cart />} />
         </Routes>
       </BrowserRouter>
       <Toaster position={`bottom-center`} />
