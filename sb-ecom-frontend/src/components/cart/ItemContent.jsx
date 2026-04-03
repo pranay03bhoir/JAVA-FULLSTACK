@@ -4,6 +4,11 @@ import { HiOutlineTrash } from "react-icons/hi2";
 import { truncateText } from "../../../utils/truncateText.js";
 import SetQuantity from "./SetQuantity.jsx";
 import { useDispatch } from "react-redux";
+import {
+  decreaseCartQuantity,
+  increaseCartQuantity,
+} from "../../store/action/index.js";
+import toast from "react-hot-toast";
 
 const ItemContent = ({
   productId,
@@ -19,9 +24,22 @@ const ItemContent = ({
   const [currentQuantity, setCurrentQuantity] = useState(productQuantity);
   const dispatch = useDispatch();
   const handleQtyIncrease = (cartItems) => {
-    dispatch();
+    dispatch(
+      increaseCartQuantity(
+        cartItems,
+        toast,
+        currentQuantity,
+        setCurrentQuantity,
+      ),
+    );
   };
-  const handleQtyDecrease = (cartItems) => {};
+  const handleQtyDecrease = (cartItems) => {
+    if (currentQuantity > 1) {
+      const newQuantity = currentQuantity - 1;
+      setCurrentQuantity(newQuantity);
+      dispatch(decreaseCartQuantity(cartItems, newQuantity));
+    }
+  };
   return (
     <div className="grid md:grid-cols-5 grid-cols-4 md:text-md text-sm gap-4   items-center  border border-slate-200  rounded-md  lg:px-4  py-4 p-2">
       <div className="md:col-span-2 justify-self-start flex  flex-col gap-2 ">
@@ -58,16 +76,27 @@ const ItemContent = ({
           quantity={currentQuantity}
           cardCounter={true}
           handleQtyIncrease={() =>
-            handleQtyIncrease(
+            handleQtyIncrease({
+              productId,
               productImage,
               productName,
               productDescription,
               specialPrice,
               productPrice,
               productQuantity,
-            )
+            })
           }
-          handleQtyDecrease={() => handleQtyDecrease()}
+          handleQtyDecrease={() =>
+            handleQtyDecrease({
+              productId,
+              productImage,
+              productName,
+              productDescription,
+              specialPrice,
+              productPrice,
+              productQuantity,
+            })
+          }
         />
       </div>
       <div className="justify-self-center lg:text-[17px] text-sm text-slate-600 font-semibold">

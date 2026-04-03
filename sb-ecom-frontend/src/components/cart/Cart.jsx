@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { MdArrowBack, MdShoppingCart } from "react-icons/md";
 import { Divider } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ItemContent from "./ItemContent.jsx";
+import { fetchProducts } from "../../store/action/index.js";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -14,6 +15,9 @@ const Cart = () => {
       acc * Number(cur?.specialPrice) * Number(cur?.productQuantity),
     0,
   );
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, []);
   if (!cart || cart.length === 0) {
     return <h1>Cart is Empty</h1>;
   }

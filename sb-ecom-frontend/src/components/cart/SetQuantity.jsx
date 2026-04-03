@@ -10,15 +10,19 @@ const SetQuantity = ({
 }) => {
   return (
     <div className={`flex gap-8 items-center`}>
-      {cardCounter ? null : <div className={`font-semibold`}>QUANTITY</div>}
+      {cardCounter ? null : <div className={`font-semibold`}>{quantity}</div>}
       <div
         className={`flex md:flex-row flex-col gap-4 items-center lg:text-[22px] text-sm`}
       >
-        <button disabled={quantity <= 1} className={btnStyles}>
+        <button
+          disabled={quantity <= 1}
+          className={btnStyles}
+          onClick={handleQtyDecrease}
+        >
           <FaMinus />{" "}
         </button>
         <div className={`text-red-500`}>{quantity}</div>
-        <button disabled={quantity <= 1} className={btnStyles}>
+        <button className={btnStyles} onClick={handleQtyIncrease}>
           {" "}
           <FaPlus />{" "}
         </button>

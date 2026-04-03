@@ -1,4 +1,5 @@
 import api from "../../api/api.js";
+import toast from "react-hot-toast";
 
 export const fetchProducts = (queryString) => async (dispatch) => {
   try {
@@ -65,4 +66,35 @@ export const addToCart =
     } else {
       toast.error(`Out of stock`);
     }
+  };
+export const increaseCartQuantity =
+  (data, toast, currentQuantity, setCurrentQuantity) =>
+  (dispatch, getState) => {
+    const { products } = getState().products;
+
+    const getProduct = products.find(
+      (item) => item.productId === data.productId,
+    );
+
+    const isQuantityExist = getProduct.productQuantity >= currentQuantity + 1;
+    if (isQuantityExist) {
+      const newQuantity = currentQuantity + 1;
+      setCurrentQuantity(newQuantity);
+      dispatch({
+        type: "ADD_CART",
+        payload: { ...data, productQuantity: newQuantity + 1 },
+      });
+      localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart));
+    } else {
+      toast.error("Quantity reached to limit");
+    }
+  };
+
+export const decreaseCartQuantity =
+  (data, newQuantity) => (dispatch, getState) => {
+    dispatch({
+      type: "ADD_CART",
+      payload: { ...data, productQuantity: newQuantity },
+    });
+    localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart));
   };
