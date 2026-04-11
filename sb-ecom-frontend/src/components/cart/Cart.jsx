@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
-import { MdArrowBack, MdShoppingCart } from "react-icons/md";
 import { Divider } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { MdArrowBack, MdShoppingCart } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import ItemContent from "./ItemContent.jsx";
+import { Link } from "react-router-dom";
+import { formatPrice } from "../../../utils/formatPrice.js";
 import { fetchProducts } from "../../store/action/index.js";
+import CartEmpty from "./CartEmpty.jsx";
+import ItemContent from "./ItemContent.jsx";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -12,14 +14,14 @@ const Cart = () => {
   const newCart = { ...cart };
   newCart.totalPrice = cart?.reduce(
     (acc, cur) =>
-      acc * Number(cur?.specialPrice) * Number(cur?.productQuantity),
+      acc + Number(cur?.specialPrice) * Number(cur?.productQuantity),
     0,
   );
   useEffect(() => {
     dispatch(fetchProducts());
   }, []);
   if (!cart || cart.length === 0) {
-    return <h1>Cart is Empty</h1>;
+    return <CartEmpty />;
   }
   return (
     <div className={`lg:px-14 sm:px-8 px-4 py-10`}>
@@ -63,7 +65,7 @@ const Cart = () => {
             className={`flex justify-between items-center text-sm md:text-base font-semibold`}
           >
             <span>Subtotal</span>
-            <span>₹70000</span>
+            <span>{formatPrice(newCart?.totalPrice)}</span>
           </div>
           <p className={`text-slate-500 text-sm`}>
             Taxes and shipping calculated at checkout.

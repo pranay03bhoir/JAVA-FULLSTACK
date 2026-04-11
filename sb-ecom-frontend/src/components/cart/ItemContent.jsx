@@ -1,14 +1,15 @@
-import React, { useState } from "react";
-import { MdDelete } from "react-icons/md";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import { HiOutlineTrash } from "react-icons/hi2";
-import { truncateText } from "../../../utils/truncateText.js";
-import SetQuantity from "./SetQuantity.jsx";
 import { useDispatch } from "react-redux";
+import { formatPrice } from "../../../utils/formatPrice.js";
+import { truncateText } from "../../../utils/truncateText.js";
 import {
   decreaseCartQuantity,
   increaseCartQuantity,
+  removeFromCart,
 } from "../../store/action/index.js";
-import toast from "react-hot-toast";
+import SetQuantity from "./SetQuantity.jsx";
 
 const ItemContent = ({
   productId,
@@ -17,9 +18,9 @@ const ItemContent = ({
   productDescription,
   productQuantity,
   productPrice,
-  productDiscount,
+  //productDiscount,
   specialPrice,
-  cartId,
+  //cartId,
 }) => {
   const [currentQuantity, setCurrentQuantity] = useState(productQuantity);
   const dispatch = useDispatch();
@@ -40,6 +41,10 @@ const ItemContent = ({
       dispatch(decreaseCartQuantity(cartItems, newQuantity));
     }
   };
+
+  const removeItemFromCart = (cartItems) => {
+    dispatch(removeFromCart(cartItems, toast));
+  };
   return (
     <div className="grid md:grid-cols-5 grid-cols-4 md:text-md text-sm gap-4   items-center  border border-slate-200  rounded-md  lg:px-4  py-4 p-2">
       <div className="md:col-span-2 justify-self-start flex  flex-col gap-2 ">
@@ -58,7 +63,17 @@ const ItemContent = ({
 
           <div className="flex items-start gap-5 mt-3">
             <button
-              onClick={() => {}}
+              onClick={() =>
+                removeItemFromCart({
+                  productId,
+                  productImage,
+                  productName,
+                  productDescription,
+                  specialPrice,
+                  productPrice,
+                  productQuantity,
+                })
+              }
               className="flex items-center font-semibold space-x-2 px-4 py-1 text-xs border border-rose-600 text-rose-600 rounded-md hover:bg-red-50 transition-colors duration-200"
             >
               <HiOutlineTrash size={16} className="text-rose-600" />
@@ -69,7 +84,7 @@ const ItemContent = ({
       </div>
 
       <div className="justify-self-center lg:text-[17px] text-sm text-slate-600 font-semibold">
-        {Number(specialPrice)}
+        {formatPrice(Number(specialPrice))}
       </div>
       <div className="justify-self-center lg:text-[17px] text-sm text-slate-600 font-semibold">
         <SetQuantity
@@ -100,7 +115,7 @@ const ItemContent = ({
         />
       </div>
       <div className="justify-self-center lg:text-[17px] text-sm text-slate-600 font-semibold">
-        {Number(currentQuantity) * Number(specialPrice)}
+        {formatPrice(Number(currentQuantity) * Number(specialPrice))}
       </div>
     </div>
   );

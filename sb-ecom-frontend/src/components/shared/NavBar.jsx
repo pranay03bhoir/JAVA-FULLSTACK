@@ -1,20 +1,26 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { FaStore } from "react-icons/fa6";
 import { Badge } from "@mui/material";
+import { useState } from "react";
 import { FaShoppingCart, FaSignInAlt } from "react-icons/fa";
-import { RxCross2 } from "react-icons/rx";
+import { FaStore } from "react-icons/fa6";
 import { IoIosMenu } from "react-icons/io";
-
+import { RxCross2 } from "react-icons/rx";
+import { useSelector } from "react-redux";
+import { Link, useLocation } from "react-router-dom";
 const NavBar = () => {
   const path = useLocation().pathname;
   const [navBarOpen, setNavBarOpen] = useState(false);
+  const { cart } = useSelector((state) => state.carts);
   return (
     <div
       className={`h-[70px] bg-custom-gradient text-white z-50 flex items-center sticky top-0 shadow-lg`}
     >
-      <div className={`lg:px-14 sm:px-8 px-4 w-full flex justify-between items-center relative`}>
-        <Link to={`/`} className={`flex items-center text-2xl font-bold hover:opacity-80 transition-opacity duration-200`}>
+      <div
+        className={`lg:px-14 sm:px-8 px-4 w-full flex justify-between items-center relative`}
+      >
+        <Link
+          to={`/`}
+          className={`flex items-center text-2xl font-bold hover:opacity-80 transition-opacity duration-200`}
+        >
           <FaStore className={`mr-2 text-3xl`} />
           <span className={`font-[Poppins] hidden sm:inline`}>E-Shop</span>
           <span className={`font-[Poppins] sm:hidden text-xl`}>E-Shop</span>
@@ -71,7 +77,7 @@ const NavBar = () => {
             >
               <Badge
                 showZero
-                badgeContent={0}
+                badgeContent={cart?.length || 0}
                 color={`primary`}
                 overlap={`circular`}
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
