@@ -19,7 +19,7 @@ const Cart = () => {
   );
   useEffect(() => {
     dispatch(fetchProducts());
-  }, []);
+  }, [dispatch]);
   if (!cart || cart.length === 0) {
     return <CartEmpty />;
   }
