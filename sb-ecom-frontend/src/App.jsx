@@ -7,6 +7,7 @@ import About from "./components/About.jsx";
 import ContactUs from "./components/ContactUs.jsx";
 import { Toaster } from "react-hot-toast";
 import Cart from "./components/cart/Cart.jsx";
+import Login from "./components/auth/Login.jsx";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path={`/about`} element={<About />} />
           <Route path={`/contact`} element={<ContactUs />} />
           <Route path={`/cart`} element={<Cart />} />
+          <Route path={`/login`} element={<Login />} />
         </Routes>
       </BrowserRouter>
       <Toaster position={`bottom-center`} />
