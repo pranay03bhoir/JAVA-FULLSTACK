@@ -6,10 +6,12 @@ import { IoIosMenu } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
+import UserMenu from "../UserMenu";
 const NavBar = () => {
   const path = useLocation().pathname;
   const [navBarOpen, setNavBarOpen] = useState(false);
   const { cart } = useSelector((state) => state.carts);
+  const { user } = useSelector((state) => state.auth);
   return (
     <div
       className={`h-[70px] bg-custom-gradient text-white z-50 flex items-center sticky top-0 shadow-lg`}
@@ -86,17 +88,25 @@ const NavBar = () => {
               </Badge>
             </Link>
           </li>
-          <li
-            className={`font-[500] transition-all duration-150 sm:text-white text-gray-200 sm:mt-0 mt-2 sm:text-base text-sm`}
-          >
-            <Link
-              to={`/login`}
-              className={`flex items-center space-x-2 px-4 py-[6px] bg-gradient-to-r from-purple-600 to-red-500 text-white font-semibold rounded-md shadow-lg hover:from-purple-500 hover:to-red-400 transition duration-300 ease-in-out transform hover:scale-105 justify-center sm:justify-start`}
+          {user && user.id ? (
+            <li
+              className={`font-[500] transition-all duration-150 sm:text-white text-gray-200 sm:mt-0 mt-2 sm:text-base text-sm`}
             >
-              <FaSignInAlt />
-              <span>Login</span>
-            </Link>
-          </li>
+              <UserMenu />
+            </li>
+          ) : (
+            <li
+              className={`font-[500] transition-all duration-150 sm:text-white text-gray-200 sm:mt-0 mt-2 sm:text-base text-sm`}
+            >
+              <Link
+                to={`/login`}
+                className={`flex items-center space-x-2 px-4 py-[6px] bg-gradient-to-r from-purple-600 to-red-500 text-white font-semibold rounded-md shadow-lg hover:from-purple-500 hover:to-red-400 transition duration-300 ease-in-out transform hover:scale-105 justify-center sm:justify-start`}
+              >
+                <FaSignInAlt />
+                <span>Login</span>
+              </Link>
+            </li>
+          )}
         </ul>
         <button
           onClick={() => setNavBarOpen(!navBarOpen)}
