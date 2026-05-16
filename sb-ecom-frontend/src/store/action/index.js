@@ -121,3 +121,29 @@ export const authenticateSignInUser =
       setLoader(false);
     }
   };
+export const registerNewUser = async (
+  sendData,
+  toast,
+  reset,
+  navigate,
+  setLoader,
+) => {
+  try {
+    setLoader(true);
+    const { data } = await api.post("/auth/signup", sendData);
+    reset();
+    toast.success(data?.message || "User Registered successfully");
+    navigate("/login");
+  } catch (error) {
+    console.log(error);
+    toast.error(error.response.data.message || "Internal server error");
+  } finally {
+    setLoader(false);
+  }
+};
+
+export const logOutUser = (navigate) => (dispatch) => {
+  dispatch({ type: "LOGOUT_USER" });
+  localStorage.removeItem("auth");
+  navigate("/login");
+};
