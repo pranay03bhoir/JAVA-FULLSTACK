@@ -32,7 +32,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final FileService fileService;
@@ -46,7 +45,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO addProduct(Long categoryId, ProductDTO productDTO) {
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "Category_id", categoryId));
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "Category_id", categoryId));
         boolean isProductNotPresent = true;
         List<Product> products = category.getProducts();
         for (Product value : products) {
@@ -69,22 +69,25 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String keyword, String category) {
+    public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder,
+            String keyword, String category) {
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
         Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
 
         Specification<Product> specification = Specification.allOf();
-        if (keyword != null && !keyword.isEmpty()){
+        if (keyword != null && !keyword.isEmpty()) {
             specification = specification
-                    .and(((root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.lower(root.get("productName")),"%" + keyword.toLowerCase() + "%")));
+                    .and(((root, query, criteriaBuilder) -> criteriaBuilder
+                            .like(criteriaBuilder.lower(root.get("productName")), "%" + keyword.toLowerCase() + "%")));
         }
-        if (category !=null && !category.isEmpty()){
-            specification = specification.and(((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("category").get("categoryName"),category)));
+        if (category != null && !category.isEmpty()) {
+            specification = specification.and(((root, query, criteriaBuilder) -> criteriaBuilder
+                    .like(root.get("category").get("categoryName"), category)));
         }
 
-        Page<Product> productPage = productRepository.findAll(specification,pageDetails);
+        Page<Product> productPage = productRepository.findAll(specification, pageDetails);
         List<Product> products = productPage.getContent();
         if (products.isEmpty()) {
             throw new APIExceptions("No products exists!!!");
@@ -106,15 +109,17 @@ public class ProductServiceImpl implements ProductService {
         return productResponse;
     }
 
-    private String constructImageUrl(String imageName){
+    private String constructImageUrl(String imageName) {
         return imageBaseUrl.endsWith("/")
-                        ? imageBaseUrl + imageName
-                        : imageBaseUrl + "/" + imageName;
+                ? imageBaseUrl + imageName
+                : imageBaseUrl + "/" + imageName;
     }
 
     @Override
-    public ProductResponse searchByCategory(Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "Category", categoryId));
+    public ProductResponse searchByCategory(Long categoryId, Integer pageNumber, Integer pageSize, String sortBy,
+            String sortOrder) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "Category", categoryId));
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -139,7 +144,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse searchProductByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+    public ProductResponse searchProductByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy,
+            String sortOrder) {
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -165,7 +171,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
-        Product productFromDB = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "ProductId", productId));
+        Product productFromDB = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "ProductId", productId));
         Product product = modelMapper.map(productDTO, Product.class);
         productFromDB.setProductName(product.getProductName());
         productFromDB.setProductDescription(product.getProductDescription());
@@ -190,7 +197,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO deleteProduct(Long productId) {
-        Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
         List<Cart> carts = cartRepository.findCartsByProductId(productId);
         carts.forEach(cart -> cartService.deleteProductFromCart(cart.getCartId(), productId));
         productRepository.delete(product);
@@ -201,17 +209,16 @@ public class ProductServiceImpl implements ProductService {
     public ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException {
         Product productFromDB = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
-        //Upload image to the server.
-        //Get the file name of uploaded image.
-//        String path = "/images";
+        // Upload image to the server.
+        // Get the file name of uploaded image.
+        // String path = "/images";
         String fileName = fileService.uploadImage(path, image);
         // updating the new file name to product.
         productFromDB.setProductImage(fileName);
         // save updated product
         Product updatedProduct = productRepository.save(productFromDB);
-        //return DTO after mapping product to DTO
+        // return DTO after mapping product to DTO
         return modelMapper.map(productFromDB, ProductDTO.class);
     }
-
 
 }
