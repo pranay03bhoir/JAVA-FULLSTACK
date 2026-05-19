@@ -3,9 +3,12 @@ import { useForm } from "react-hook-form";
 import InputField from "../shared/InputField";
 import Spinners from "../shared/Spinners";
 import { FaMapMarkerAlt } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { addUpdateUserAddress } from "../../store/action/index.js";
 
-const AddAddressForm = ({ onCancel }) => {
+const AddAddressForm = ({ address, onCancel }) => {
+  const dispatch = useDispatch();
   const { btnLoader } = useSelector((state) => state.errors);
   const {
     register,
@@ -24,8 +27,8 @@ const AddAddressForm = ({ onCancel }) => {
     },
   });
 
-  const onSaveAddressHandler = (data) => {
-    console.log(data);
+  const onSaveAddressHandler = async (data) => {
+    dispatch(addUpdateUserAddress(data, toast, address?.addressId, onCancel));
     reset();
   };
 
@@ -70,7 +73,7 @@ const AddAddressForm = ({ onCancel }) => {
                 id="street"
                 type="text"
                 message="Street or area is required"
-                placeholder="e.g. MG Road, Koramangala"
+                placeholder="e.g. BKC, Bandra West"
                 register={register}
                 errors={errors}
               />
@@ -81,7 +84,7 @@ const AddAddressForm = ({ onCancel }) => {
               id="city"
               type="text"
               message="City is required"
-              placeholder="e.g. Bangalore"
+              placeholder="e.g. Mumbai"
               register={register}
               errors={errors}
             />
@@ -91,7 +94,7 @@ const AddAddressForm = ({ onCancel }) => {
               id="state"
               type="text"
               message="State is required"
-              placeholder="e.g. Karnataka"
+              placeholder="e.g. Maharashtra"
               register={register}
               errors={errors}
             />
@@ -120,7 +123,7 @@ const AddAddressForm = ({ onCancel }) => {
               type="text"
               min={6}
               message="Pincode is required"
-              placeholder="e.g. 560001"
+              placeholder="e.g. 400001"
               register={register}
               errors={errors}
             />

@@ -24,6 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Set;
 
@@ -34,7 +35,8 @@ import java.util.Set;
  */
 @Configuration // Spring ko batata hai ki ye configuration class hai
 @EnableWebSecurity // Spring Security ko enable karta hai
-//@EnableMethodSecurity // Method level security (@PreAuthorize, @Secured) enable karta hai - currently commented
+// @EnableMethodSecurity // Method level security (@PreAuthorize, @Secured)
+// enable karta hai - currently commented
 @RequiredArgsConstructor // Lombok: final fields ke liye constructor automatically generate karta hai
 public class WebSecurityConfig {
 
@@ -49,7 +51,8 @@ public class WebSecurityConfig {
 
     /**
      * AuthEntryPoint - Unauthorized access handle karta hai
-     * Jab koi bina authentication ke secured endpoint access kare, ye 401 error return karta hai
+     * Jab koi bina authentication ke secured endpoint access kare, ye 401 error
+     * return karta hai
      */
     private final AuthEntryPoint authEntryPoint;
 
@@ -58,6 +61,8 @@ public class WebSecurityConfig {
      * Token se user information extract karke SecurityContext mein set karta hai
      */
     private final AuthTokenFilter authTokenFilter;
+
+    private final CorsConfigurationSource corsConfigurationSource;
 
     // ====== AUTHENTICATION PROVIDER BEAN ======
 
@@ -91,7 +96,8 @@ public class WebSecurityConfig {
      * Ye authentication process ko coordinate karta hai
      * <p>
      * Use case: Login endpoint mein manually authentication trigger karne ke liye
-     * Example: authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(...))
+     * Example: authenticationManager.authenticate(new
+     * UsernamePasswordAuthenticationToken(...))
      * <p>
      * Ye internally DaoAuthenticationProvider ko call karega
      */
@@ -106,8 +112,10 @@ public class WebSecurityConfig {
      * PasswordEncoder Bean - BCrypt algorithm use karta hai
      * <p>
      * Purpose:
-     * 1. Registration time: Plain password ko encrypt karke database mein save karna
-     * 2. Login time: User dwara enter kiya password ko encrypted password se compare karna
+     * 1. Registration time: Plain password ko encrypt karke database mein save
+     * karna
+     * 2. Login time: User dwara enter kiya password ko encrypted password se
+     * compare karna
      * <p>
      * BCrypt features:
      * - Salted hashing (har password ka unique hash)
@@ -141,6 +149,7 @@ public class WebSecurityConfig {
          * REST APIs ke liye generally CSRF disable hi hota hai
          */
         http.csrf(AbstractHttpConfigurer::disable);
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource));
 
         // ====== EXCEPTION HANDLING ======
         /**
@@ -148,9 +157,7 @@ public class WebSecurityConfig {
          * Jab koi user bina authentication ke secured resource access kare,
          * AuthEntryPoint ke through proper error response bhejta hai (401 Unauthorized)
          */
-        http.exceptionHandling(exception ->
-                exception.authenticationEntryPoint(authEntryPoint)
-        );
+        http.exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint));
 
         // ====== SESSION MANAGEMENT ======
         /**
@@ -166,30 +173,29 @@ public class WebSecurityConfig {
          * - Microservices friendly
          * - Load balancing easy
          */
-        http.sessionManagement(sessionManagement ->
-                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        );
+        http.sessionManagement(
+                sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // ====== AUTHORIZATION RULES ======
         /**
          * URL-based access control
          * Define karta hai ki kaun sa endpoint public hai aur kaun sa secured
          */
-        http.authorizeHttpRequests(authorizeRequest ->
-                authorizeRequest
-                        // Public endpoints - Koi bhi access kar sakta hai (no authentication required)
-                        .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()          // Login/Register endpoints
-                        .requestMatchers("/v3/api-docs/**").permitAll()       // Swagger/OpenAPI documentation
-                        .requestMatchers("/swagger-ui/**").permitAll()        // Swagger UI
-                        //.requestMatchers("/api/public/**").permitAll()        // Public API endpoints
-                        // .requestMatchers("/api/admin/**").permitAll()         // Admin endpoints (currently public - SECURITY RISK!)
-                        .requestMatchers("/api/test/**").permitAll()          // Test endpoints
-                        .requestMatchers("/images/**").permitAll()            // Static image files
-                        .requestMatchers("/h2-console/**").permitAll()        // H2 database
+        http.authorizeHttpRequests(authorizeRequest -> authorizeRequest
+                // Public endpoints - Koi bhi access kar sakta hai (no authentication required)
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll() // Login/Register endpoints
+                .requestMatchers("/v3/api-docs/**").permitAll() // Swagger/OpenAPI documentation
+                .requestMatchers("/swagger-ui/**").permitAll() // Swagger UI
+                // .requestMatchers("/api/public/**").permitAll() // Public API endpoints
+                // .requestMatchers("/api/admin/**").permitAll() // Admin endpoints (currently
+                // public - SECURITY RISK!)
+                .requestMatchers("/api/test/**").permitAll() // Test endpoints
+                .requestMatchers("/images/**").permitAll() // Static image files
+                .requestMatchers("/h2-console/**").permitAll() // H2 database
 
-                        // Secured endpoints - Authentication required
-                        .anyRequest().authenticated()                          // Baaki sab endpoints authenticated users ke liye
+                // Secured endpoints - Authentication required
+                .anyRequest().authenticated() // Baaki sab endpoints authenticated users ke liye
         );
 
         // ====== AUTHENTICATION PROVIDER ======
@@ -218,14 +224,19 @@ public class WebSecurityConfig {
 
         // ======== X-FRAME-OPTIONS ==========
         /*
-         * Yeh code X-Frame-Options HTTP response header ko SAMEORIGIN value pe set karta hai. Iska main kaam hai clickjacking attacks se protection provide karna.
+         * Yeh code X-Frame-Options HTTP response header ko SAMEORIGIN value pe set
+         * karta hai. Iska main kaam hai clickjacking attacks se protection provide
+         * karna.
          *
-         *Jab aap yeh configuration lagate ho, toh yeh browser ko batata hai ki aapka page sirf usi website ke iframe mein load ho sakta hai jo same origin (same domain, protocol, aur port) ka ho. Matlab agar aapki website example.com hai, toh sirf example.com ke doosre pages hi aapke page ko frame mein load kar sakte hain, koi external website nahi kar sakti.​
+         * Jab aap yeh configuration lagate ho, toh yeh browser ko batata hai ki aapka
+         * page sirf usi website ke iframe mein load ho sakta hai jo same origin (same
+         * domain, protocol, aur port) ka ho. Matlab agar aapki website example.com hai,
+         * toh sirf example.com ke doosre pages hi aapke page ko frame mein load kar
+         * sakte hain, koi external website nahi kar sakti.​
          *
-         * */
+         */
         http.headers(headers -> headers.frameOptions(
-                frameOptionsConfig -> frameOptionsConfig.sameOrigin()
-        ));
+                frameOptionsConfig -> frameOptionsConfig.sameOrigin()));
         // Security filter chain build karke return karo
         return http.build();
     }
@@ -247,17 +258,18 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web -> web.ignoring().requestMatchers(
-                "/v2/api-docs",              // Swagger v2 docs (if using)
-                "/configuration/ui",          // Swagger UI configuration
-                "/swagger-resources/**",      // Swagger resources
-                "/configuration/security",    // Security configuration
-                "/swagger-ui.html",           // Old Swagger UI
-                "webjars/**"                  // WebJars (frontend libraries)
+                "/v2/api-docs", // Swagger v2 docs (if using)
+                "/configuration/ui", // Swagger UI configuration
+                "/swagger-resources/**", // Swagger resources
+                "/configuration/security", // Security configuration
+                "/swagger-ui.html", // Old Swagger UI
+                "webjars/**" // WebJars (frontend libraries)
         ));
     }
 
     @Bean
-    public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository,
+            PasswordEncoder passwordEncoder) {
         return args -> {
             // Retrieve or create roles
             Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
@@ -281,7 +293,6 @@ public class WebSecurityConfig {
             Set<Role> userRoles = Set.of(userRole);
             Set<Role> sellerRoles = Set.of(sellerRole);
             Set<Role> adminRoles = Set.of(userRole, sellerRole, adminRole);
-
 
             // Create users if not already present
             if (!userRepository.existsByUsername("user1")) {

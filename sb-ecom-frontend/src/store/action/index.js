@@ -147,3 +147,20 @@ export const logOutUser = (navigate) => (dispatch) => {
   localStorage.removeItem("auth");
   navigate("/login");
 };
+
+export const addUpdateUserAddress =
+  (sendData, toast, addressId, onCancel) => async (dispatch, getState) => {
+    // const { user } = getState().auth;
+    dispatch({ type: "BUTTON_LOADER" });
+    try {
+      const { data } = await api.post("/addresses", sendData);
+      toast.success("Address saved successfully.");
+      dispatch({type:"IS_SUCCESS"})
+    } catch (e) {
+      console.log(e);
+      toast.error(e?.response?.data.message || "Internal Server Error");
+      dispatch({ type: "IS_ERROR", payload: null });
+    } finally {
+      onCancel(false);
+    }
+  };
