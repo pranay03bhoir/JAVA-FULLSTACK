@@ -3,10 +3,12 @@ import React, { useState } from "react";
 import { FaAddressBook, FaPlus } from "react-icons/fa6";
 import AddressInfoModal from "./AddressInfoModal";
 import AddAddressForm from "./AddAddressForm";
+import { useSelector } from "react-redux";
+import AddressList from "./AddressList";
 
-const AddressInfo = () => {
-  const noAddressExists = true;
-  const isLoading = false;
+const AddressInfo = ({ address }) => {
+  const noAddressExists = !address || address.length === 0;
+  const { isLoading, btnLoader } = useSelector((state) => state.errors);
   const [openAddressModal, setOpenAddressModal] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState("");
   const addNewAddressHandler = () => {
@@ -48,9 +50,27 @@ const AddressInfo = () => {
               />
             </div>
           ) : (
-            <div className="space-y-4 pt-6">
-              <p>Address List</p>
-            </div>
+            <>
+              <div className="space-y-4 pt-6">
+                <AddressList
+                  addresses={address}
+                  selectedAddress={selectedAddress}
+                  setSelectedAddress={setSelectedAddress}
+                  setOpenAddressModal={setOpenAddressModal}
+                />
+              </div>
+              {address.length > 0 && (
+                <div className="flex justify-center mt-6">
+                  <button
+                    onClick={addNewAddressHandler}
+                    className="flex items-center gap-2 px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 transition duration-150 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    <FaPlus className="text-white" size={18} />
+                    Add Another Address
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
