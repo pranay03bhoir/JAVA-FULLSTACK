@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import InputField from "../shared/InputField";
 import Spinners from "../shared/Spinners";
@@ -14,6 +14,7 @@ const AddAddressForm = ({ address, onCancel }) => {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     mode: "onTouched",
@@ -27,10 +28,20 @@ const AddAddressForm = ({ address, onCancel }) => {
     },
   });
 
-  const onSaveAddressHandler = async (data) => {
+  const onSaveAddressHandler = (data) => {
     dispatch(addUpdateUserAddress(data, toast, address?.addressId, onCancel));
-    reset();
   };
+
+  useEffect(() => {
+    if (address?.addressId) {
+      setValue("buildingName", address?.buildingName);
+      setValue("street", address?.street);
+      setValue("city", address?.city);
+      setValue("state", address?.state);
+      setValue("country", address?.country);
+      setValue("pincode", address?.pincode);
+    }
+  }, []);
 
   return (
     <form onSubmit={handleSubmit(onSaveAddressHandler)} className="w-full">
@@ -40,7 +51,9 @@ const AddAddressForm = ({ address, onCancel }) => {
         </div>
         <div>
           <h2 className="text-xl font-bold text-slate-800 font-montserrat">
-            Add delivery address
+            {!address?.addressId
+              ? "Add delivery address"
+              : "Update delivery address"}
           </h2>
           <p className="mt-1 text-sm text-slate-500">
             Where should we deliver your order?

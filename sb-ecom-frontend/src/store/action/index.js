@@ -149,25 +149,30 @@ export const logOutUser = (navigate) => (dispatch) => {
 };
 
 export const addUpdateUserAddress =
-  (sendData, toast, addressId, onCancel) => async (dispatch, getState) => {
-    // const { user } = getState().auth;
+  (sendData, toast, addressId, onCancel) => async (dispatch) => {
     dispatch({ type: "BUTTON_LOADER" });
     try {
-      const { data } = await api.post("/addresses", sendData);
-      toast.success("Address saved successfully.");
+      if (!addressId) {
+        await api.post("/addresses", sendData);
+        toast.success("Address saved successfully.");
+      } else {
+        await api.put(`/addresses/${addressId}`, sendData);
+        toast.success("Address updated successfully.");
+      }
       dispatch({ type: "IS_SUCCESS" });
+      await dispatch(getUserAddresses());
     } catch (e) {
       console.log(e);
-      toast.error(e?.response?.data.message || "Internal Server Error");
+      toast.error(e?.response?.data?.message || "Internal Server Error");
       dispatch({ type: "IS_ERROR", payload: null });
     } finally {
-      onCancel(false);
+      onCancel?.();
     }
   };
-export const getUserAddresses = () => async (dispatch, getState) => {
+export const getUserAddresses = () => async (dispatch) => {
   try {
     dispatch({ type: "IS_FETCHING" });
-    const { data } = await api.get(`/addresses`);
+    const { data } = await api.get(`/user/addresses`);
     dispatch({
       type: "USER_ADDRESS",
       payload: data,
@@ -186,5 +191,29 @@ export const selectUserCheckoutAddress = (address) => {
   return {
     type: "SELECT_CHECKOUT_ADDRESS",
     payload: address,
+  };
+};
+
+export const deleteUserAddress =
+  (addressId, toast, onSuccess) => async (dispatch, getState) => {
+    dispatch({ type: "BUTTON_LOADER" });
+    try {
+      await api.delete(`/addresses/${addressId}`);
+      toast.success("Address deleted successfully.");
+      const { selectedUserAddress } = getState().auth;
+      dispatch(clearCheckOutAddress());
+      dispatch({ type: "IS_SUCCESS" });
+      await dispatch(getUserAddresses());
+      onSuccess?.();
+    } catch (e) {
+      console.log(e);
+      toast.error(e?.response?.data?.message || "Failed to delete address");
+      dispatch({ type: "IS_ERROR", payload: null });
+    }
+  };
+
+export const clearCheckOutAddress = () => {
+  return {
+    type: "REMOVE_CHECKOUT_ADDRESS",
   };
 };

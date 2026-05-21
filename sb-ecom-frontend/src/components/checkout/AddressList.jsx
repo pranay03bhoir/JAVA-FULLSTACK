@@ -10,6 +10,7 @@ const AddressList = ({
   selectedAddress,
   setSelectedAddress,
   setOpenAddressModal,
+  setOpenDeleteModal,
 }) => {
   const dispatch = useDispatch();
   const { selectedUserAddress } = useSelector((state) => state.auth);
@@ -26,6 +27,7 @@ const AddressList = ({
   const handleDeleteAddress = (e, address) => {
     e.stopPropagation();
     setSelectedAddress(address);
+    setOpenDeleteModal(true);
   };
 
   return (
@@ -75,8 +77,8 @@ const AddressList = ({
                   <button
                     type="button"
                     onClick={(e) => handleDeleteAddress(e, address)}
-                    className="shrink-0 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-blue-100 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    aria-label="Edit address"
+                    className="shrink-0 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                    aria-label="Delete address"
                   >
                     <MdDelete size={16} className="text-red-600" />
                   </button>

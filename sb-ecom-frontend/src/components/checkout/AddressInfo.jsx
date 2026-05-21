@@ -3,17 +3,30 @@ import React, { useState } from "react";
 import { FaAddressBook, FaPlus } from "react-icons/fa6";
 import AddressInfoModal from "./AddressInfoModal";
 import AddAddressForm from "./AddAddressForm";
-import { useSelector } from "react-redux";
+import DeleteModal from "./DeleteModal";
+import { useDispatch, useSelector } from "react-redux";
 import AddressList from "./AddressList";
+import toast from "react-hot-toast";
+import { deleteUserAddress } from "../../store/action";
 
 const AddressInfo = ({ address }) => {
   const noAddressExists = !address || address.length === 0;
   const { isLoading, btnLoader } = useSelector((state) => state.errors);
   const [openAddressModal, setOpenAddressModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState("");
+  const dispatch = useDispatch();
   const addNewAddressHandler = () => {
     setSelectedAddress("");
     setOpenAddressModal(true);
+  };
+  const deleteAddressHandler = () => {
+    if (!selectedAddress?.addressId) return;
+    dispatch(
+      deleteUserAddress(selectedAddress.addressId, toast, () =>
+        setOpenDeleteModal(false),
+      ),
+    );
   };
   return (
     <div className="pt-4">
@@ -57,6 +70,7 @@ const AddressInfo = ({ address }) => {
                   selectedAddress={selectedAddress}
                   setSelectedAddress={setSelectedAddress}
                   setOpenAddressModal={setOpenAddressModal}
+                  setOpenDeleteModal={setOpenDeleteModal}
                 />
               </div>
               {address.length > 0 && (
@@ -80,6 +94,13 @@ const AddressInfo = ({ address }) => {
           onCancel={() => setOpenAddressModal(false)}
         />
       </AddressInfoModal>
+      <DeleteModal
+        open={openDeleteModal}
+        setOpen={setOpenDeleteModal}
+        itemName={selectedAddress?.buildingName}
+        onDeleteHandler={deleteAddressHandler}
+        loader={btnLoader}
+      />
     </div>
   );
 };
