@@ -2,6 +2,7 @@ package com.ecommerce.sbecom.controllers;
 
 import com.ecommerce.sbecom.models.Cart;
 import com.ecommerce.sbecom.payload.CartDTO;
+import com.ecommerce.sbecom.payload.CartItemDTO;
 import com.ecommerce.sbecom.repositories.CartRepository;
 import com.ecommerce.sbecom.services.CartService;
 import com.ecommerce.sbecom.utils.AuthUtil;
@@ -20,6 +21,13 @@ public class CartController {
     private final CartService cartService;
     private final AuthUtil authUtil;
     private final CartRepository cartRepository;
+
+    @PostMapping("/carts/create")
+    public ResponseEntity<String> createOrUpdateCart(
+            @RequestBody List<CartItemDTO> cartItemDTOS) {
+        String response = cartService.createOrUpdateCartWithItems(cartItemDTOS);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 
     @PostMapping("/carts/products/{productId}/quantity/{quantity}")
     public ResponseEntity<CartDTO> addProductToCart(

@@ -1,6 +1,7 @@
 package com.ecommerce.sbecom.services;
 
 import com.ecommerce.sbecom.payload.CartDTO;
+import com.ecommerce.sbecom.payload.CartItemDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -20,5 +21,6 @@ public interface CartService {
     String deleteProductFromCart(Long cartId, Long productId);
 
     void updateProductsInCart(Long cartId, Long productId);
-    
+
+    String createOrUpdateCartWithItems(List<CartItemDTO> cartItemDTOS);
 }
