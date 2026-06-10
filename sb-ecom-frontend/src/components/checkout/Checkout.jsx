@@ -1,10 +1,12 @@
-import { Button, Step, StepLabel, Stepper } from "@mui/material";
+import { Button, Skeleton, Step, StepLabel, Stepper } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import AddressInfo from "./AddressInfo";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserAddresses } from "../../store/action";
 import { FaArrowLeft } from "react-icons/fa";
 import { toast } from "react-hot-toast";
+import ErrorPage from "../shared/ErrorPage.jsx";
+import PaymentMethod from "./PaymentMethod.jsx";
 
 const Checkout = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -40,9 +42,20 @@ const Checkout = () => {
           </Step>
         ))}
       </Stepper>
-      <div className="mt-5">
-        {activeStep === 0 && <AddressInfo address={address} />}
-      </div>
+      {isLoading ? (
+        <div className={`lg:w-[80%] mx-auto py-10 space-y-4`}>
+          <Skeleton animation={"pulse"} variant={`rounded`} height={100} />
+          <Skeleton animation={"pulse"} variant={`rounded`} height={100} />
+          <Skeleton animation={"pulse"} variant={`rounded`} height={100} />
+          <Skeleton animation={"pulse"} variant={`rounded`} height={100} />
+        </div>
+      ) : (
+        <div className="mt-5">
+          {activeStep === 0 && <AddressInfo address={address} />}
+          {activeStep === 1 && <PaymentMethod />}
+        </div>
+      )}
+
       <div className="flex justify-between items-center px-8 fixed z-50 h-20 bottom-0 bg-linear-to-t from-white to-slate-50/60 left-0 w-full py-2 border-t border-slate-300 shadow-md transition-all duration-200">
         <Button
           variant="contained"
@@ -98,6 +111,7 @@ const Checkout = () => {
 
         <div style={{ width: 120 }} />
       </div>
+      {errorMessage && <ErrorPage message={errorMessage} />}
     </div>
   );
 };

@@ -2,24 +2,26 @@ import { configureStore } from "@reduxjs/toolkit";
 import { productReducer } from "./productReducer.js";
 import { errorReducer } from "./errorReducer.js";
 import { cartReducer } from "./cartReducer.js";
-import {authReducer} from "./authReducer.js";
+import { authReducer } from "./authReducer.js";
+import { paymentMethodReducer } from "./paymentMethodReducer.js";
 
 const user = localStorage.getItem("auth")
-    ? JSON.parse(localStorage.getItem("auth"))
-    : null;
+  ? JSON.parse(localStorage.getItem("auth"))
+  : null;
 
 const cartItems = localStorage.getItem("cartItems")
   ? JSON.parse(localStorage.getItem("cartItems"))
   : [];
 
-const initialState = {auth:{user:user} ,carts: { cart: cartItems } };
+const initialState = { auth: { user: user }, carts: { cart: cartItems } };
 
 export const store = configureStore({
   reducer: {
     products: productReducer,
     errors: errorReducer,
     carts: cartReducer,
-    auth:authReducer,
+    auth: authReducer,
+    payment: paymentMethodReducer,
   },
   preloadedState: initialState,
 });
