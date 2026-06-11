@@ -7,14 +7,16 @@ import com.ecommerce.sbecom.repositories.CartRepository;
 import com.ecommerce.sbecom.services.CartService;
 import com.ecommerce.sbecom.utils.AuthUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/carts")
 @RequiredArgsConstructor
 public class CartController {
 
@@ -22,7 +24,7 @@ public class CartController {
     private final AuthUtil authUtil;
     private final CartRepository cartRepository;
 
-    @PostMapping("/carts/create")
+    @PostMapping("/cart/create")
     public ResponseEntity<String> createOrUpdateCart(
             @RequestBody List<CartItemDTO> cartItemDTOS) {
         String response = cartService.createOrUpdateCartWithItems(cartItemDTOS);
@@ -48,6 +50,7 @@ public class CartController {
     public ResponseEntity<CartDTO> getCartById() {
         String emailId = authUtil.loggedInEmail();
         Cart cart = cartRepository.findCartByEmail(emailId);
+        log.info("Cart: {}", cart);
         Long cartId = cart.getCartId();
         CartDTO cartDTO = cartService.getCart(emailId, cartId);
         return new ResponseEntity<>(cartDTO, HttpStatus.OK);

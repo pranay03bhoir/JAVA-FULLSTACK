@@ -269,7 +269,7 @@ public class WebSecurityConfig {
 
     @Bean
     public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository,
-            PasswordEncoder passwordEncoder) {
+                                      PasswordEncoder passwordEncoder) {
         return args -> {
             // Retrieve or create roles
             Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)

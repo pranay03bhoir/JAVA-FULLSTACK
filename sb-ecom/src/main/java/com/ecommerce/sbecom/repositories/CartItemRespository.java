@@ -1,13 +1,10 @@
 package com.ecommerce.sbecom.repositories;
 
-import com.ecommerce.sbecom.models.Cart;
 import com.ecommerce.sbecom.models.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface CartItemRespository extends JpaRepository<CartItem, Long> {
@@ -20,6 +17,7 @@ public interface CartItemRespository extends JpaRepository<CartItem, Long> {
     @Modifying
     void deleteCartItemByProductIdAndCartId(Long productId, Long cartId);
 
+    @Modifying
     @Query("DELETE FROM CartItem ci WHERE ci.cart.cartId = ?1")
-    List<Cart> deleteAllByCartId(Long cartId);
+    void deleteAllByCartId(Long cartId);
 }
