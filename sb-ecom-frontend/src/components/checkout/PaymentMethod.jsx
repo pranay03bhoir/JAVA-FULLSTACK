@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { FaCcStripe, FaCcPaypal } from "react-icons/fa";
 import { SiRazorpay } from "react-icons/si";
 import { useDispatch, useSelector } from "react-redux";
-import { addPaymentMethod } from "../../store/action/index.js";
+import { addPaymentMethod, createUserCart } from "../../store/action/index.js";
 
 const PAYMENT_METHODS = [
   {
@@ -35,6 +35,16 @@ const PAYMENT_METHODS = [
 const PaymentMethod = () => {
   const dispatch = useDispatch();
   const { paymentMethod } = useSelector((state) => state.payment);
+  const { cart, cartId } = useSelector((state) => state.carts);
+  useEffect(() => {
+    if (cart.length > 0 && !cartId) {
+      const sendCartItems = cart.map((item) => ({
+        productId: item.productId,
+        quantity: item.productQuantity,
+      }));
+      dispatch(createUserCart(sendCartItems));
+    }
+  }, [dispatch, cartId, cart]);
 
   function paymentMethodHandler(method) {
     dispatch(addPaymentMethod(method));
