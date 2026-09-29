@@ -1,16 +1,22 @@
 package com.ecommerce.sbecom.payload;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.ecommerce.sbecom.models.Address;
+import lombok.*;
+
+import java.util.Map;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class StripePaymentDto {
 
     private Long amount;
     private String currency;
+    private String email;
+    private String name;
+    private Address address;
+    private String description;
+    private Map<String, String> metadata;
 }

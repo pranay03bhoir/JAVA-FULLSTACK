@@ -299,6 +299,7 @@ public class AuthController {
         UserInfoResponse response = new UserInfoResponse(
                 userDetails.getId(),
                 userDetails.getUsername(),
+                userDetails.getEmail(),
                 roles,
                 jwtToken
         );
